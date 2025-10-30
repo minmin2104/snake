@@ -67,11 +67,12 @@ class Snake:
         elif keys[pygame.K_DOWN] and self.movement[1] == 0:
             self.movement = [0, 1]
 
-
+        if not all(val == 0 for val in self.movement):
+            # TODO: Handle opposite movement is a no no
+            self.head.movement_queue.append(self.movement)
+            self.movement = [0, 0]
+            
         if self.game.game_time - self.last_update_time >= self.update_cooldown:
-            if not all(val == 0 for val in self.movement):
-                self.head.movement_queue.append(self.movement)
-                self.movement = [0, 0]
             self.__translateHead()
             self.__handle_wall()
             self.__update_position()
