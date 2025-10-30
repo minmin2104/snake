@@ -9,8 +9,8 @@ class Game:
         self.running = True
 
         pygame.init()
-        self.__win_width = win_width
-        self.__win_height = win_height
+        self.win_width = win_width
+        self.win_height = win_height
         self.screen = pygame.display.set_mode((win_width, win_height))
         pygame.display.set_caption(win_title)
         self.clock = pygame.time.Clock()
