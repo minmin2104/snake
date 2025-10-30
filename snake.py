@@ -1,7 +1,7 @@
 import pygame
 
 
-class SnakeBody:
+class _SnakeBody:
     def __init__(self, x, y, width, height):
         self.x = x
         self.y = y
@@ -14,7 +14,7 @@ class SnakeBody:
 class Snake:
     def __init__(self, game):
         self.game = game
-        self.head = SnakeBody(0, 0, 25, 25)
+        self.head = _SnakeBody(0, 0, 25, 25)
         self.body = None
         self.color = (0, 255, 0)
 
