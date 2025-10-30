@@ -14,8 +14,9 @@ class _SnakeBody:
 class Snake:
     def __init__(self, game):
         self.game = game
-        self.head = _SnakeBody(0, 0, 25, 25)
-        self.body = None
+        self.width = self.height = 25
+        self.head = _SnakeBody(0, 0, self.width, self.height)
+        self.body = [self.head]
         self.color = (0, 255, 0)
         self.speed = self.head.width
         self.movement = [0, 0]
@@ -29,6 +30,10 @@ class Snake:
     def __translateY(self):
         self.head.position.y += self.movement[1] * self.speed
         self.head.rect.y = self.head.position.y
+
+    def __add_body(self, x, y):
+        snake_body = _SnakeBody(x, y, self.width, self.height)
+        self.body.append(snake_body)
 
     def update(self):
         keys = self.game.keys
@@ -47,4 +52,5 @@ class Snake:
             self.last_update_time = self.game.game_time
 
     def render(self):
-        pygame.draw.rect(self.game.screen, self.color, self.head.rect)
+        for body in self.body:
+            pygame.draw.rect(self.game.screen, self.color, body.rect)
