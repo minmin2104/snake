@@ -16,6 +16,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.pressed_keys = None
         self.dt = 0
+        self.game_time = 0
 
         self.snake = Snake(self)
         self.food = None
@@ -32,13 +33,14 @@ class Game:
             
             # Update & Render
             self.screen.fill((0, 0, 0))
-
+            
             self.snake.update()
             self.snake.render()
             
             pygame.display.flip()
 
             self.dt = self.clock.tick(self.fps) / 1000
+            self.game_time += self.dt
 
     def clean_up(self):
         pygame.quit()
