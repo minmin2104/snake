@@ -1,12 +1,9 @@
+from snake import Snake
 import pygame
 
 
 class Game:
     def __init__(self, win_width, win_height, win_title):
-        self.snake = None
-        self.food = None
-        self.score = 0
-
         self.fps = 60
         self.game_state = None
         self.running = True
@@ -18,6 +15,10 @@ class Game:
         pygame.display.set_caption(win_title)
         self.clock = pygame.time.Clock()
 
+        self.snake = Snake(self)
+        self.food = None
+        self.score = 0
+
     def main(self):
         while self.running:
             # Poll input
@@ -27,6 +28,8 @@ class Game:
             
             # Update & Render
             self.screen.fill((0, 0, 0))
+
+            self.snake.render()
             
             pygame.display.flip()
 
