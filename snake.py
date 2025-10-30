@@ -9,6 +9,7 @@ class _SnakeBody:
         self.height = height
         self.position = pygame.math.Vector2(self.x, self.y)
         self.rect = pygame.Rect(self.position.x, self.position.y, width, height)
+        self.movement_queue = []
 
 
 class Snake:
@@ -20,6 +21,7 @@ class Snake:
         self.color = (0, 255, 0)
         self.speed = self.width
         self.movement = [0, 0]
+        self.curr_move = [0, 0]
         self.last_update_time = 0
         self.update_cooldown = 0.5
 
@@ -29,6 +31,13 @@ class Snake:
     def __translateY(self):
         self.head.position.y += self.movement[1] * self.speed
 
+    def __translateHead(self):
+        print(self.head.movement_queue)
+        if self.head.movement_queue:
+            self.curr_move = self.head.movement_queue.pop(0)
+        self.head.position.x += self.curr_move[0] * self.speed
+        self.head.position.y += self.curr_move[1] * self.speed
+
     def __update_position(self):
         self.head.rect.x = self.head.position.x
         self.head.rect.y = self.head.position.y
@@ -36,6 +45,16 @@ class Snake:
     def __add_body(self, x, y):
         snake_body = _SnakeBody(x, y, self.width, self.height)
         self.body.append(snake_body)
+
+    def __handle_wall(self):
+        if self.head.position.x < 0:
+            self.head.position.x = self.game.win_width - self.width
+        elif self.head.position.x >= self.game.win_width:
+            self.head.position.x = 0
+        elif self.head.position.y < 0:
+            self.head.position.y = self.game.win_height - self.height
+        elif self.head.position.y >= self.game.win_height:
+            self.head.position.y = 0
 
     def update(self):
         keys = self.game.keys
@@ -48,17 +67,13 @@ class Snake:
         elif keys[pygame.K_DOWN] and self.movement[1] == 0:
             self.movement = [0, 1]
 
+
         if self.game.game_time - self.last_update_time >= self.update_cooldown:
-            self.__translateX()
-            self.__translateY()
-            if self.head.position.x < 0:
-                self.head.position.x = self.game.win_width - self.width
-            elif self.head.position.x >= self.game.win_width:
-                self.head.position.x = 0
-            elif self.head.position.y < 0:
-                self.head.position.y = self.game.win_height - self.height
-            elif self.head.position.y >= self.game.win_height:
-                self.head.position.y = 0
+            if not all(val == 0 for val in self.movement):
+                self.head.movement_queue.append(self.movement)
+                self.movement = [0, 0]
+            self.__translateHead()
+            self.__handle_wall()
             self.__update_position()
             self.last_update_time = self.game.game_time
 
