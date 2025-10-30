@@ -14,6 +14,8 @@ class Game:
         self.screen = pygame.display.set_mode((win_width, win_height))
         pygame.display.set_caption(win_title)
         self.clock = pygame.time.Clock()
+        self.pressed_keys = None
+        self.dt = 0
 
         self.snake = Snake(self)
         self.food = None
@@ -25,15 +27,18 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
+                    
+            self.keys = pygame.key.get_pressed()
             
             # Update & Render
             self.screen.fill((0, 0, 0))
 
+            self.snake.update()
             self.snake.render()
             
             pygame.display.flip()
 
-            self.clock.tick(self.fps)
+            self.dt = self.clock.tick(self.fps) / 1000
 
     def clean_up(self):
         pygame.quit()
