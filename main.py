@@ -55,9 +55,8 @@ class Game:
             self.snake.update()
             self.food.update()
             
-            self.food.render()
             self.snake.render()
-
+            self.food.render()
             self.render_score()
             
             if self.game_state == GameState.GameOver:
