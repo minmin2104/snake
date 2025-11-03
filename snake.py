@@ -19,8 +19,11 @@ class Snake:
         self.head = _SnakeBody(0, 0, self.width, self.height)
         # Test Body
         self.body = [
-            self.head
+            self.head,
+            _SnakeBody(self.head.position.x+self.width, self.head.position.y, self.width, self.height),
+            _SnakeBody(self.head.position.x+self.width*2, self.head.position.y, self.width, self.height),
         ]
+        self.body_pos_hist = []
         self.color = (0, 255, 0)
         self.speed = self.width
         self.movement = [0, 0]
@@ -28,6 +31,7 @@ class Snake:
         self.last_update_time = 0
         self.update_cooldown = 0.125
         self.can_queue_input = True
+        self.delay = 1
 
     def __translateX(self):
         self.head.position.x += self.movement[0] * self.speed
@@ -38,16 +42,12 @@ class Snake:
     def __translateHead(self):
         if self.head.movement_queue:
             self.curr_move = self.head.movement_queue.pop(0)
+        self.body_pos_hist.append(self.head.position.copy())
+        max_hist = len(self.body) * self.delay
+        if len(self.body_pos_hist) > max_hist:
+            self.body_pos_hist.pop(0)
         self.head.position.x += self.curr_move[0] * self.speed
         self.head.position.y += self.curr_move[1] * self.speed
-
-    def __translateBody(self):
-        prev_pos = self.head.position
-        for body in self.body[1:]:
-            tmp_pos = body.position
-            body.position.x = prev_pos.x
-            body.position.y = prev_pos.y
-            prev_pos = tmp_pos
 
     def __update_position(self):
         self.head.rect.x = self.head.position.x
@@ -92,6 +92,12 @@ class Snake:
             self.__translateHead()
             self.can_queue_input = True
             self.__handle_wall()
+            for i in range(1, len(self.body)):
+                index = -(i * self.delay)
+                if len(self.body_pos_hist) >= abs(index):
+                    self.body[i].position = self.body_pos_hist[index].copy()
+                    self.body[i].rect.x = self.body[i].position.x
+                    self.body[i].rect.y = self.body[i].position.y                    
             self.__update_position()
             self.last_update_time = self.game.game_time
         
