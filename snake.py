@@ -69,7 +69,11 @@ class Snake:
 
         if not all(val == 0 for val in self.movement):
             # TODO: Handle opposite movement is a no no
-            self.head.movement_queue.append(self.movement)
+            if not self.head.movement_queue:
+                self.head.movement_queue = [self.movement]
+            else:
+                if self.head.movement_queue[-1] != self.movement:
+                    self.head.movement_queue.append(self.movement)
             self.movement = [0, 0]
             
         if self.game.game_time - self.last_update_time >= self.update_cooldown:
