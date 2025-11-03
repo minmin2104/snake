@@ -1,5 +1,7 @@
 from snake import Snake
+from food import Food
 import pygame
+import random
 
 
 class Game:
@@ -19,8 +21,13 @@ class Game:
         self.game_time = 0
 
         self.snake = Snake(self)
-        self.food = None
+        self.food = Food(self, self.get_random_pos())
         self.score = 0
+
+    def get_random_pos(self, width_height_offset=25):
+        x = random.randint(0, (self.win_width - width_height_offset) // width_height_offset) * width_height_offset
+        y = random.randint(0, (self.win_height - width_height_offset) // width_height_offset) * width_height_offset
+        return pygame.math.Vector2(x, y)
 
     def main(self):
         while self.running:
@@ -35,6 +42,9 @@ class Game:
             self.screen.fill((0, 0, 0))
             
             self.snake.update()
+            self.food.update()
+            
+            self.food.render()
             self.snake.render()
             
             pygame.display.flip()

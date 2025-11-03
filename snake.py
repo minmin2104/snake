@@ -17,11 +17,8 @@ class Snake:
         self.game = game
         self.width = self.height = 25
         self.head = _SnakeBody(0, 0, self.width, self.height)
-        # Test Body
         self.body = [
-            self.head,
-            _SnakeBody(self.head.position.x+self.width, self.head.position.y, self.width, self.height),
-            _SnakeBody(self.head.position.x+self.width*2, self.head.position.y, self.width, self.height),
+            self.head
         ]
         self.body_pos_hist = []
         self.color = (0, 255, 0)
@@ -38,6 +35,9 @@ class Snake:
 
     def __translateY(self):
         self.head.position.y += self.movement[1] * self.speed
+
+    def grow_body(self):
+        self.body.append(_SnakeBody(self.body_pos_hist[-1].x, self.body_pos_hist[-1].y, self.width, self.height))
 
     def __translateHead(self):
         if self.head.movement_queue:
