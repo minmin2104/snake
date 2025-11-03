@@ -1,3 +1,4 @@
+from game_state import GameState
 import pygame
 
 
@@ -28,6 +29,7 @@ class Snake:
         self.last_update_time = 0
         self.update_cooldown = 0.125
         self.can_queue_input = True
+        self.min_safe_body_index = 5
         self.delay = 1
 
     def __translateX(self):
@@ -97,7 +99,9 @@ class Snake:
                 if len(self.body_pos_hist) >= abs(index):
                     self.body[i].position = self.body_pos_hist[index].copy()
                     self.body[i].rect.x = self.body[i].position.x
-                    self.body[i].rect.y = self.body[i].position.y                    
+                    self.body[i].rect.y = self.body[i].position.y
+                if self.body[i].rect.colliderect(self.head.rect) and i >= self.min_safe_body_index:
+                    self.game.game_state = GameState.GameOver
             self.__update_position()
             self.last_update_time = self.game.game_time
         

@@ -1,8 +1,8 @@
 from snake import Snake
 from food import Food
+from game_state import GameState
 import pygame
 import random
-
 
 class Game:
     def __init__(self, win_width, win_height, win_title):
@@ -19,6 +19,7 @@ class Game:
         self.pressed_keys = None
         self.dt = 0
         self.game_time = 0
+        self.game_state = GameState.GamePlaying
 
         self.snake = Snake(self)
         self.food = Food(self, self.get_random_pos())
@@ -46,6 +47,9 @@ class Game:
             
             self.food.render()
             self.snake.render()
+
+            if self.game_state == GameState.GameOver:
+                self.running = False
             
             pygame.display.flip()
 
