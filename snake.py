@@ -17,13 +17,17 @@ class Snake:
         self.game = game
         self.width = self.height = 25
         self.head = _SnakeBody(0, 0, self.width, self.height)
-        self.body = [self.head]
+        # Test Body
+        self.body = [
+            self.head
+        ]
         self.color = (0, 255, 0)
         self.speed = self.width
         self.movement = [0, 0]
         self.curr_move = [0, 0]
         self.last_update_time = 0
-        self.update_cooldown = 0.5
+        self.update_cooldown = 0.125
+        self.can_queue_input = True
 
     def __translateX(self):
         self.head.position.x += self.movement[0] * self.speed
@@ -32,11 +36,18 @@ class Snake:
         self.head.position.y += self.movement[1] * self.speed
 
     def __translateHead(self):
-        print(self.head.movement_queue)
         if self.head.movement_queue:
             self.curr_move = self.head.movement_queue.pop(0)
         self.head.position.x += self.curr_move[0] * self.speed
         self.head.position.y += self.curr_move[1] * self.speed
+
+    def __translateBody(self):
+        prev_pos = self.head.position
+        for body in self.body[1:]:
+            tmp_pos = body.position
+            body.position.x = prev_pos.x
+            body.position.y = prev_pos.y
+            prev_pos = tmp_pos
 
     def __update_position(self):
         self.head.rect.x = self.head.position.x
@@ -58,30 +69,32 @@ class Snake:
 
     def update(self):
         keys = self.game.keys
-        if keys[pygame.K_UP] and self.movement[1] == 0:
+        if keys[pygame.K_UP] and self.curr_move != [0, 1]:
             self.movement = [0, -1]
-        elif keys[pygame.K_LEFT] and self.movement[0] == 0:
+        elif keys[pygame.K_LEFT] and self.curr_move != [1, 0]:
             self.movement = [-1, 0]
-        elif keys[pygame.K_RIGHT] and self.movement[0] == 0:
+        elif keys[pygame.K_RIGHT] and self.curr_move != [-1, 0]:
             self.movement = [1, 0]
-        elif keys[pygame.K_DOWN] and self.movement[1] == 0:
+        elif keys[pygame.K_DOWN] and self.curr_move != [0, -1]:
             self.movement = [0, 1]
 
-        if not all(val == 0 for val in self.movement):
-            # TODO: Handle opposite movement is a no no
-            if not self.head.movement_queue:
-                self.head.movement_queue = [self.movement]
-            else:
-                if self.head.movement_queue[-1] != self.movement:
-                    self.head.movement_queue.append(self.movement)
-            self.movement = [0, 0]
-            
+        if self.can_queue_input:
+            if not all(val == 0 for val in self.movement):
+                # Handle opposite movement is a no no
+                if not self.head.movement_queue:
+                    self.head.movement_queue = [self.movement]
+                else:
+                    if self.head.movement_queue[-1] != self.movement:
+                        self.head.movement_queue.append(self.movement)
+            self.can_queue_input = False
+
         if self.game.game_time - self.last_update_time >= self.update_cooldown:
             self.__translateHead()
+            self.can_queue_input = True
             self.__handle_wall()
             self.__update_position()
             self.last_update_time = self.game.game_time
-
+        
     def render(self):
         for body in self.body:
             pygame.draw.rect(self.game.screen, self.color, body.rect)
