@@ -3,6 +3,7 @@ from food import Food
 from game_state import GameState
 import pygame
 import random
+import os
 
 class Game:
     def __init__(self, win_width, win_height, win_title):
@@ -23,12 +24,21 @@ class Game:
 
         self.snake = Snake(self)
         self.food = Food(self, self.get_random_pos())
-        self.score = 0
+        self.init_score()
 
     def get_random_pos(self, width_height_offset=25):
         x = random.randint(0, (self.win_width - width_height_offset) // width_height_offset) * width_height_offset
         y = random.randint(0, (self.win_height - width_height_offset) // width_height_offset) * width_height_offset
         return pygame.math.Vector2(x, y)
+
+    def init_score(self):
+        retro_font = os.path.join("assets", "retro_gaming.ttf")
+        self.score_text = pygame.font.Font(retro_font)
+        self.score = 0
+
+    def render_score(self):
+        score_text_surface = self.score_text.render(f"Score: {self.score:0>3}", True, pygame.Color(255, 255, 255))
+        self.screen.blit(score_text_surface, (self.win_width - score_text_surface.get_width() - 5, 5))
 
     def main(self):
         while self.running:
@@ -48,6 +58,8 @@ class Game:
             self.food.render()
             self.snake.render()
 
+            self.render_score()
+            
             if self.game_state == GameState.GameOver:
                 self.running = False
             
